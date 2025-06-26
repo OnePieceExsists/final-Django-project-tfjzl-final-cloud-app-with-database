@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VS Code settings
+.vscode/
+
+# Coverage data
+.coverage/
+htmlcov/
+
+# Media uploads (if generated dynamically)
+media/
