@@ -104,6 +104,7 @@ class Question(models.Model):
         return "Question: " + self.content
 
     def is_get_score(self, selected_ids):
+        """ Returns True if all correct choices are selected and no incorrect ones are selected. """
         all_answers = self.choice_set.filter(is_correct=True).count()
         selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
         if all_answers == selected_correct:
@@ -112,11 +113,22 @@ class Question(models.Model):
             return False
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
     content = models.CharField(max_length=200)
     is_correct = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.content} ({'Correct' if self.is_correct else 'Incorrect'})"
+
 class Submission(models.Model):
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name="submissions")
     choices = models.ManyToManyField(Choice)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    def __str__(self):
+        return f"Submission by {self.enrollment.user.username} for course {self.enrollment.course.name}"
     
+class Meta:
+    ordering = ['id']
